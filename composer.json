@@ -1,0 +1,24 @@
+{
+  "name": "infracamp/rudl-manager",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Matthias Leuffen",
+      "email": "leuffen@continue.de"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "RudlManager\\": "src/"
+    },
+    "files": [
+      "src/functions.inc.php"
+    ]
+  },
+  "require": {
+    "php" : ">7.0"
+  }
+}
+
+

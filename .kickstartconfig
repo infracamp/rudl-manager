@@ -1,0 +1,3 @@
+## Allow Container to communicate with host docker
+
+KICKSTART_DOCKER_RUN_OPTS="$KICKSTART_DOCKER_RUN_OPTS -v /var/run/docker.sock:/var/run/docker.sock"
