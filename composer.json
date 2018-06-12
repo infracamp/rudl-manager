@@ -11,10 +11,7 @@
   "autoload": {
     "psr-4": {
       "RudlManager\\": "src/"
-    },
-    "files": [
-      "src/functions.inc.php"
-    ]
+    }
   },
   "require": {
     "php" : ">7.0"
