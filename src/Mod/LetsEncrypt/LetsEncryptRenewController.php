@@ -45,7 +45,7 @@ class LetsEncryptRenewController
         if ($crtMeta === false) {
             throw new \Exception("Invalid x509 cert data." . openssl_error_string());
         }
-        return $crtData;
+        return ["crtMeta" => $crtMeta, "crtData" => $crtData];
     }
 
     /**

@@ -22,6 +22,7 @@ cloudfront:
     domains:
       - "test1.apiag.de"
       - "test2.apiag.de"
+      - "test3.apiag.de"
     ssl: letsencrypt
     ssl-upgrade: true
 
