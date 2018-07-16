@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  xyz:
+    image: hello-world
+    deploy:
+      replicas: 1
+    networks:
+      - "peter"
+
+networks:
+  peter:
+    external: true

@@ -1,0 +1,32 @@
+authUsers:
+- "admin:admin:@admin"
+
+notify:
+- "infrastruktur@continue.de"
+
+config:
+  login:
+    - host: "hub.docker.com"
+      user: "someUser"
+      pass: "somePass"
+
+stacks:
+  mysql1:
+    active: true
+    config: "./stacks/demo.stack.yml"
+    updateKey: "02j4hksnbwkj"
+
+
+cloudfront:
+  - service: mysql1_frontend
+    domains:
+      - "someDomain.de"
+      - "www.someDomain.de"
+    ssl: letsencrypt
+    ssl-upgrade: true
+
+  - service: webservice-xy
+    domains:
+      - "someTld.tld"
+      - "www.someTld.tdl"
+
