@@ -30,6 +30,9 @@ class LetsEncryptRenewController
 
     protected function requestCert($serviceId, array $domains)
     {
+
+        ks_exec("rm -R :workdir",  ["workdir" => LetsEncryptModule::LE_WORK_DIR]);
+
         ks_exec(
             "certbot certonly --work-dir :workdir --logs-dir :workdir --config-dir :workdir --webroot -w :webroot --register-unsafely-without-email --agree-tos -d :domains",
             [
