@@ -32,10 +32,6 @@ class LetsEncryptRenewController
     protected $log;
 
 
-    public function __construct(App $app) {
-        parent::__construct($app);
-        $this->log = new Log();
-    }
 
     /**
      * @param $domain
@@ -122,6 +118,7 @@ class LetsEncryptRenewController
      */
     public function on_get(RouteParams $routeParams)
     {
+        $this->log = new Log();
         $serviceId = $routeParams->get("serviceId", new \InvalidArgumentException("Service ID not found in route params."));
         $domainList = $this->getDomainListForService($serviceId);
         $domainList = $this->cleanupDomainList($domainList);
