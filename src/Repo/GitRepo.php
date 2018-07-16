@@ -59,7 +59,7 @@ class GitRepo
             $cmd .= 'GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ' . $sshKeyFile . '" ';
         }
 
-        $cmd .= "git pull :localPath";
+        $cmd .= "git -C :localPath pull";
         return ks_exec($cmd, ["localPath"=> $this->repoLocalPath]);
     }
 }
