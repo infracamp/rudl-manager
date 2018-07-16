@@ -27,7 +27,7 @@ function ks_exec($cmd, array $args=[], $returnArray=false)
         $cmd);
     exec($cmd . " 2>&1", $output, $return);
     if ($return !== 0)
-        throw new Exception("Command '$cmd' returned with code $return. " . implode("", $output));
+        throw new Exception("Command '$cmd' returned with code $return. " . implode("\n", $output));
     if ($returnArray)
         return $output;
     return implode("", $output);
