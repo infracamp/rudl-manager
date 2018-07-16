@@ -41,7 +41,11 @@ class LetsEncryptRenewController
     {
         $url = "http://$domain/.well-known/acme-challenge/verify-host-resolve";
         $sha1 = sha1(gethostname());
-        $domainSha1 = file_get_contents($url);
+        try {
+            $domainSha1 = file_get_contents($url);
+        } catch (\ErrorException $e) {
+            $domainSha1 = null;
+        }
         if ($sha1 != $domainSha1) {
             $this->log->log("Domain '{$domain}' is not valid: {$url} return invalid sha hostname: '{$domainSha1}'");
             return false;
