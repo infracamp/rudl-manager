@@ -18,10 +18,10 @@ stacks:
 
 
 cloudfront:
-  - service: mysql1_frontend
+  - service: test1_frontend
     domains:
-      - "someDomain.de"
-      - "www.someDomain.de"
+      - "test1.apiag.de"
+      - "test2.apiag.de"
     ssl: letsencrypt
     ssl-upgrade: true
 

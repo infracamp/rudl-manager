@@ -9,13 +9,19 @@
 namespace RudlManager\Mod\LetsEncrypt;
 
 
-use KH\Mod\KSApp;
 use Phore\MicroApp\Controller\Controller;
 use Phore\MicroApp\Type\QueryParams;
 use Phore\MicroApp\Type\Request;
 use Phore\MicroApp\Type\Route;
 use Phore\MicroApp\Type\RouteParams;
+use RudlManager\Mod\KSApp;
 
+
+/**
+ * Class LetsEncryptRenewController
+ * @package RudlManager\Mod\LetsEncrypt
+ * @property KSApp $app
+ */
 class LetsEncryptRenewController
 {
     use Controller;
@@ -39,9 +45,30 @@ class LetsEncryptRenewController
         if ($crtMeta === false) {
             throw new \Exception("Invalid x509 cert data." . openssl_error_string());
         }
+        return $crtData;
     }
 
+    /**
+     * @param $serviceId
+     * @return string[]
+     */
+    protected function getDomainListForService($serviceId)
+    {
+        $cloudfront = $this->app->confFile["cloudfront"];
+        $foundService = null;
+        for ($i = 0; $i < count($cloudfront); $i++) {
+            if ($cloudfront[$i]["service"] == $serviceId) {
+                $foundService = $cloudfront[$i];
+                break;
+            }
+        }
 
+        if ($foundService == null) {
+            throw new \InvalidArgumentException("Service '{$serviceId}' not found in config yml!");
+        }
+
+        return $foundService["domains"];
+    }
 
     /**
      * Route: /api/v1/letsencrypt/renew/:serviceId?
@@ -51,25 +78,11 @@ class LetsEncryptRenewController
      * @param RouteParams $routeParams
      * @param QueryParams $GET
      */
-    public function on_get(
-        Request $request,
-        Route $route,
-        RouteParams $routeParams,
-        QueryParams $GET,
-        KSApp $app
-    ) {
-        $routeParams->
-        $serviceDomainList = [];
-        foreach ($app->confFile["cloudfront"] as $service) {
-            if ( ! isset ($serviceDomainList[$service["service"]]))
-                $serviceDomainList[$service["service"]] = [];
-            foreach ($service["domains"] as $curDomain) {
-                $serviceDomainList[$service["service"]][] = (string)$curDomain;
-            }
-        }
-
-
-        app()->outJSON("obtaining ssl-certificates");
+    public function on_get(RouteParams $routeParams)
+    {
+        $serviceId = $routeParams->get("serviceId", new \InvalidArgumentException("Service ID not found in route params."));
+        $domainList = $this->getDomainListForService($serviceId);
+        return $this->requestCert($serviceId, $domainList);
     }
 
 }

@@ -9,11 +9,10 @@
 namespace RudlManager\Mod\LetsEncrypt;
 
 
-use OttoDB\OttoDb;
 use Phore\MicroApp\App;
 use Phore\MicroApp\AppModule;
-use Phore\MicroApp\Type\Route;
 use Phore\MicroApp\Type\RouteParams;
+
 
 class LetsEncryptModule implements AppModule
 {
