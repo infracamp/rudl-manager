@@ -9,11 +9,13 @@
 namespace RudlManager\Mod\LetsEncrypt;
 
 
+use Phore\MicroApp\App;
 use Phore\MicroApp\Controller\Controller;
 use Phore\MicroApp\Type\QueryParams;
 use Phore\MicroApp\Type\Request;
 use Phore\MicroApp\Type\Route;
 use Phore\MicroApp\Type\RouteParams;
+use RudlManager\Helper\Log;
 use RudlManager\Mod\KSApp;
 
 
@@ -27,6 +29,29 @@ class LetsEncryptRenewController
     use Controller;
 
 
+    protected $log;
+
+
+    public function __construct(App $app) {
+        parent::__construct($app);
+        $this->log = new Log();
+    }
+
+    /**
+     * @param $domain
+     * @return bool
+     */
+    protected function isValidDomain($domain) :bool
+    {
+        $url = "http://$domain/.well-known/acme-challenge/verify-host-resolve";
+        $sha1 = sha1(gethostname());
+        $domainSha1 = file_get_contents($url);
+        if ($sha1 != $domainSha1) {
+            $this->log->log("Domain '{$domain}' is not valid: {$url} return invalid sha hostname: '{$domainSha1}'");
+            return false;
+        }
+        return true;
+    }
 
     protected function requestCert($serviceId, array $domains)
     {
@@ -48,7 +73,21 @@ class LetsEncryptRenewController
         if ($crtMeta === false) {
             throw new \Exception("Invalid x509 cert data." . openssl_error_string());
         }
-        return ["crtMeta" => $crtMeta, "crtData" => $crtData];
+        return ["crtMeta" => $crtMeta, "crtData" => $crtData, "log" => $this->log->logs];
+    }
+
+    protected function cleanupDomainList(array $domainList) :array
+    {
+        $ret = [];
+        foreach ($domainList as $domain) {
+            $this->log->log("Verifying domain '{$domain}' is linked to cloudfront");
+            if ( ! $this->isValidDomain($domain)) {
+                $this->log->log("Warning: Domain '{$domain}' removed from domain list");
+                continue;
+            }
+            $ret[] = $domain;
+        }
+        return $ret;
     }
 
     /**
@@ -85,6 +124,7 @@ class LetsEncryptRenewController
     {
         $serviceId = $routeParams->get("serviceId", new \InvalidArgumentException("Service ID not found in route params."));
         $domainList = $this->getDomainListForService($serviceId);
+        $domainList = $this->cleanupDomainList($domainList);
         return $this->requestCert($serviceId, $domainList);
     }
 
