@@ -10,6 +10,7 @@ namespace RudlManager\Mod\Update;
 
 
 use Phore\MicroApp\Controller\Controller;
+use RudlManager\Db\CloudFrontDomain;
 use RudlManager\Db\CloudFrontService;
 use RudlManager\Mod\KSApp;
 
@@ -40,23 +41,50 @@ class UpdateController {
         $savedServices = [];
         $db->query("SELECT * FROM CloudFrontService")->each(function(array $row) use(&$savedServices) {
             $curService = CloudFrontService::Cast($row);
-            $savedServices[$curService->serviceId] = $curService->serviceId;
+            $savedServices[$curService->serviceId] = $curService;
         });
 
-        $requiredServices = [];
         foreach ($cloudfront as $service) {
             $serviceId = $service["service"];
+
             if (isset($savedServices[$serviceId])) {
-                // update existing
-
-
                 unset($savedServices[$serviceId]);
 
             } else {
-                // create new
-
+                $cloudfrontService = new CloudFrontService();
+                $cloudfrontService->serviceId = $serviceId;
+                $db->insert($cloudfrontService);
             }
 
+            $savedDomains = [];
+            $db->query("SELECT * FROM CloudFrontDomain WHERE serviceId = :serviceId", ["serviceId" => $serviceId])
+                ->each(function (array $row) use (&$savedDomains) {
+                    $curDomain = CloudFrontDomain::Cast($row);
+                    $savedDomains[$curDomain->domain] = $curDomain;
+                }
+            );
+
+            foreach ($service["domains"] as $curDomain) {
+                if (isset($savedDomains[$curDomain])) {
+                    unset ($savedDomains[$curDomain]);
+
+                } else {
+                    $domain = new CloudFrontDomain();
+                    $domain->domain = $curDomain;
+                    $domain->serviceId = $serviceId;
+                    $db->insert($domain);
+                }
+            }
+
+            // delete orphaned domains
+            foreach ($savedDomains as $domain => $obj) {
+                $db->delete($obj);
+            }
+        }
+
+        // delete orphaned services
+        foreach ($savedServices as $serviceId => $obj) {
+            $db->delete($obj);
         }
 
     }
