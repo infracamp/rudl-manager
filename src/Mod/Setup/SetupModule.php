@@ -47,7 +47,7 @@ class SetupModule implements AppModule
             $repo->setAuthSshPrivateKey(CONF_REPO_SSH_PRIVATEKEY);
 
         $app->define("confFile", new DiService(function () {
-            return yaml_parse(file_get_contents(CONF_REPO_TARGET . CONF_REPO_CONF_FILE));
+            return phore_path(CONF_REPO_TARGET . CONF_REPO_CONF_FILE);
         }));
 
         $app->define("db", new DiService(function () {
@@ -62,9 +62,9 @@ class SetupModule implements AppModule
             MigrationKernel::RunMigrations($app->db);
 
             if ($repo->isCloned())
-                \app()->outJSON(["success"=>true, "msg"=> "Repo is already existing"]);
+                return ["success"=>true, "msg"=> "Repo is already existing"];
             $repo->gitClone();
-            \app()->outJSON(["success"=>true, "msg"=>"clone of config-directory successful"]);
+            return ["success"=>true, "msg"=>"clone of config-directory successful"];
         });
 
         if ($repo->isCloned())

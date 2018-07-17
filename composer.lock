@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "9b0416bb93459748764249634d3701d7",
+    "content-hash": "a22a350a1b87b5afd0ff18f5d4c46d1c",
     "packages": [
         {
             "name": "continue/otto-db",
@@ -144,6 +144,45 @@
                 "di"
             ],
             "time": "2018-07-10T05:48:13+00:00"
+        },
+        {
+            "name": "phore/filesystem",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phore/phore-filesystem.git",
+                "reference": "83ccca01622266073923852d135f36a7bd180525"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phore/phore-filesystem/zipball/83ccca01622266073923852d135f36a7bd180525",
+                "reference": "83ccca01622266073923852d135f36a7bd180525",
+                "shasum": ""
+            },
+            "require": {
+                "ext-yaml": "*",
+                "php": ">7.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Phore\\FileSystem\\": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Matthias Leuffen",
+                    "email": "leuffen@continue.de"
+                }
+            ],
+            "time": "2018-07-17T13:26:07+00:00"
         },
         {
             "name": "phore/html",
@@ -370,6 +409,7 @@
     "stability-flags": {
         "phore/micro-app": 20,
         "phore/theme-coreui": 20,
+        "phore/filesystem": 20,
         "continue/otto-db": 20
     },
     "prefer-stable": false,

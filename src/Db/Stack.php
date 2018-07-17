@@ -9,8 +9,11 @@
 namespace RudlManager\Db;
 
 
+use OttoDB\Entity\Entity;
+
 class Stack
 {
+    use Entity;
 
     const __META__ = [
         "primaryKey" => "stackName"
