@@ -26,15 +26,17 @@ class IdDiffTool
                 case "N":
                     // New Items
                     $newItems = array_diff_key($newData, $oldData);
-                    foreach ($newItems as $key => $data)
+                    foreach ($newItems as $key => $data) {
                         $this->idDiffToolProcessor->newElement($key, $data);
+                    }
                     break;
 
                 case "D":
                     // deleted Items
                     $delItems = array_diff_key($oldData, $newData);
-                    foreach ($delItems as $key => $data)
-                        $this->idDiffToolProcessor->newElement($key, $data);
+                    foreach ($delItems as $key => $data) {
+                        $this->idDiffToolProcessor->deletedElement($key, $data);
+                    }
                     break;
 
                 case "M":
