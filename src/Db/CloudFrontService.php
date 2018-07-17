@@ -27,10 +27,22 @@ class CloudFrontService
     public $serviceId;
 
     /**
-     * @var string
+     * @var string  STATIC|DYNAMIC
      */
     public $source;
 
+    /**
+     * @var string LETSENCRYPT|NONE|STATIC
+     */
+    public $cert_type;
+
+
+    /**
+     * Switch to SSL if cert is available and valid.
+     *
+     * @var int
+     */
+    public $auto_upgrade_ssl = 0;
 
     public $cert_id;
     public $cert_data;
