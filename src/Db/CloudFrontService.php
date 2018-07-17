@@ -34,7 +34,7 @@ class CloudFrontService
     /**
      * @var string LETSENCRYPT|NONE|STATIC
      */
-    public $cert_type;
+    public $cert_type = "NONE";
 
 
     /**

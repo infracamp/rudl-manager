@@ -1,14 +1,14 @@
-authUsers:
-- "admin:admin:@admin"
-
-notify:
-- "infrastruktur@continue.de"
 
 config:
   login:
     - host: "hub.docker.com"
       user: "someUser"
       pass: "somePass"
+  notify:
+    - "infrastruktur@continue.de"
+  authUser:
+    - "admin:admin:@admin:{}"
+
 
 stacks:
   mysql1:
@@ -18,15 +18,15 @@ stacks:
 
 
 cloudfront:
-  - service: test1_frontend
+  test1_frontend:
     domains:
       - "test1.apiag.de"
       - "test2.apiag.de"
       - "test3.apiag.de"
-    ssl: letsencrypt
-    ssl-upgrade: true
+    cert_type: letsencrypt
+    auto_upgrade_ssl: true
 
-  - service: webservice-xy
+  webservice-xy:
     domains:
       - "someTld.tld"
       - "www.someTld.tdl"
