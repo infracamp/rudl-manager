@@ -15,6 +15,7 @@ use RudlManager\Mod\DockerApi\DockerApiMod;
 use RudlManager\Mod\KSApp;
 use RudlManager\Mod\LetsEncrypt\LetsEncryptModule;
 use RudlManager\Mod\Setup\SetupModule;
+use RudlManager\Mod\Update\UpdateModule;
 
 require __DIR__ . "/../vendor/autoload.php";
 
@@ -30,6 +31,7 @@ $app->setOnExceptionHandler(new JsonExceptionHandler());
 
 // Add Modules below
 $app->addModule(new SetupModule());
+$app->addModule(new UpdateModule());
 $app->addModule(new LetsEncryptModule());
 $app->addModule(new CloudFrontModule());
 $app->addModule(new DockerApiMod());

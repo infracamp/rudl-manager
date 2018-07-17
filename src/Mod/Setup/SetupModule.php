@@ -67,11 +67,6 @@ class SetupModule implements AppModule
             \app()->outJSON(["success"=>true, "msg"=>"clone of config-directory successful"]);
         });
 
-        $app->router->get("/hooks/update", function () use ($repo) {
-            $repo->gitPull();
-            \app()->outJSON(["success"=>true, "msg"=>"clone of config-directory successful"]);
-        });
-
         if ($repo->isCloned())
             return;
         $app->serve();

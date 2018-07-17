@@ -23,12 +23,12 @@ class __Migration_1 implements Migration
 
     public function up(OttoDb $db)
     {
-        $db->query('CREATE TABLE Domain (
+        $db->query('CREATE TABLE CloudFrontDomain (
             domain TEXT PRIMARY KEY,
             serviceId TEXT
         )');
 
-        $db->query('CREATE TABLE Service (
+        $db->query('CREATE TABLE CloudFrontService (
             serviceId TEXT PRIMARY KEY,
             source TEXT,
             cert_data BLOB,
@@ -41,8 +41,8 @@ class __Migration_1 implements Migration
 
     public function down(OttoDb $db)
     {
-        $db->query("DROP TABLE Domain;");
-        $db->query("DROP TABLE Service;");
+        $db->query("DROP TABLE CloudFrontDomain;");
+        $db->query("DROP TABLE CloudFrontService;");
     }
 
     public function getPredecessor(): Migration

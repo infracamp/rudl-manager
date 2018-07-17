@@ -11,7 +11,7 @@ namespace RudlManager\Db;
 
 use OttoDB\Entity\Entity;
 
-class Service
+class CloudFrontService
 {
     use Entity;
 

@@ -47,7 +47,7 @@ class LetsEncryptRenewController
             $domainSha1 = null;
         }
         if ($sha1 != $domainSha1) {
-            $this->log->log("Domain '{$domain}' is not valid: {$url} return invalid sha hostname: '{$domainSha1}'");
+            $this->log->log("CloudFrontDomain '{$domain}' is not valid: {$url} return invalid sha hostname: '{$domainSha1}'");
             return false;
         }
         return true;
@@ -82,10 +82,13 @@ class LetsEncryptRenewController
         foreach ($domainList as $domain) {
             $this->log->log("Verifying domain '{$domain}' is linked to cloudfront");
             if ( ! $this->isValidDomain($domain)) {
-                $this->log->log("Warning: Domain '{$domain}' removed from domain list");
+                $this->log->log("Warning: CloudFrontDomain '{$domain}' removed from domain list");
                 continue;
             }
             $ret[] = $domain;
+        }
+        if (count($ret) == 0) {
+            throw new \InvalidArgumentException("Error: No domains to request or renew certificates for...");
         }
         return $ret;
     }

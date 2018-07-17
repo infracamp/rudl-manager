@@ -9,10 +9,10 @@
 namespace RudlManager\Mod;
 
 
-use KH\Docker\DockerCmd;
-use KH\Repo\GitRepo;
 use OttoDB\OttoDb;
 use Phore\MicroApp\App;
+use RudlManager\Docker\DockerCmd;
+use RudlManager\Repo\GitRepo;
 
 /**
  * Class KSApp
