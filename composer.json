@@ -11,11 +11,20 @@
   "autoload": {
     "psr-4": {
       "RudlManager\\": "src/"
-    }
+    },
+    "files": [
+      "src/functions.php",
+      "config.php",
+      "src/dbconfig.php"
+    ]
   },
   "require": {
-    "php" : ">7.0"
-  }
+    "php" : ">7.2",
+    "phore/micro-app": "dev-master",
+    "phore/theme-coreui": "dev-master",
+    "continue/otto-db": "dev-master"
+  },
+  "minimum-stability": "dev"
 }
 
 

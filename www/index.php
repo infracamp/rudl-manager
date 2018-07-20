@@ -6,7 +6,35 @@
  * Time: 1:22 AM
  */
 
+namespace App;
+
+use Phore\MicroApp\Handler\JsonExceptionHandler;
+use Phore\MicroApp\Handler\JsonResponseHandler;
+use RudlManager\Mod\CloudFront\CloudFrontModule;
+use RudlManager\Mod\DockerApi\DockerApiMod;
+use RudlManager\Mod\KSApp;
+use RudlManager\Mod\LetsEncrypt\LetsEncryptModule;
+use RudlManager\Mod\Setup\SetupModule;
+use RudlManager\Mod\Update\UpdateModule;
+
 require __DIR__ . "/../vendor/autoload.php";
 
-$docker = new \RudlManager\Docker\DockerCmd();
-print_r ($docker->exec("ps"));
+
+$app = new KSApp();
+$app->acl->addRule(aclRule()->route("/")->ALLOW());
+$app->acl->addRule(aclRule()->route("/hooks/*")->ALLOW());
+$app->acl->addRule(aclRule()->route("/api/*")->ALLOW());
+
+$app->activateExceptionErrorHandlers();
+$app->setResponseHandler(new JsonResponseHandler());
+$app->setOnExceptionHandler(new JsonExceptionHandler());
+
+// Add Modules below
+$app->addModule(new SetupModule());
+$app->addModule(new UpdateModule());
+$app->addModule(new LetsEncryptModule());
+$app->addModule(new CloudFrontModule());
+$app->addModule(new DockerApiMod());
+
+
+$app->serve();

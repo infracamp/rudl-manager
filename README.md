@@ -1,5 +1,24 @@
 # rudl-manager
-Manage docker swarm clusters
+
+Manage docker swarm clusters. Instead of offering a complex frontend,
+ruld-manager will clone a configuration repository and update the
+cluster configuration along these config-files.
+
+## [Setting up rudl-manager](doc/setup/setup.md)
+
+- Development: Setup a docker swarm manager node by running
+  ```
+  sudo docker swarm init
+  ```
+
+- Production: You must define some Secrets. See our setup-guide
+  [Setup Guide for production environments](doc/setup/production.md)
+
+
+
+
+
+
 
 - [InfraCamp Homepage](http://infracamp.org)
 - Configuration stored in git repository
@@ -18,7 +37,6 @@ Create a `.kickstartconfig` inside this project.
 
 KICKSTART_DOCKER_RUN_OPTS="$KICKSTART_DOCKER_RUN_OPTS -v /var/run/docker.sock:/var/run/docker.sock"
 ```
-
 
 ## Starting
 
@@ -80,9 +98,6 @@ service:
 Cloudfront-Services must proxy all Requests to `/.acme/challange/*` to `http://rudl-manager/.acme/callange`.
 
 Certs can be downloaded 
-
-
-
 
 
 

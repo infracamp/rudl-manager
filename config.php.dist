@@ -1,0 +1,19 @@
+<?php
+/**
+ * This file is copied to config.php by kick
+ *
+ * Placeholders (\%CONF_ENVNAME\%) are replaced by the values found in environment
+ */
+
+define("CONF_REPO_URI",                 "%CONF_REPO_URI%");
+define("CONF_REPO_SSH_PRIVATEKEY",      "%CONF_REPO_SSH_PRIVATEKEY%");
+define("CONF_REPO_CONF_FILE",           "%CONF_REPO_CONF_FILE%");
+define("CONF_REPO_STACK_FILE_FOLDER",   "%CONF_REPO_STACK_FILE_FOLDER%");
+
+/**
+ * Secret the CloudFront polls CloudConfig and SSL-Certs from Hypervisor
+ */
+define("CONF_CLOUDFRONT_SECRET",        "%CONF_CLOUDFRONT_SECRET%");
+
+define("CONF_REPO_TARGET", "/srv/repo");
+define("CONF_STORAGE_PATH", "/srv");

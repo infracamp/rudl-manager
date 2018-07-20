@@ -1,0 +1,33 @@
+
+config:
+  login:
+    - host: "hub.docker.com"
+      user: "someUser"
+      pass: "somePass"
+  notify:
+    - "infrastruktur@continue.de"
+  authUser:
+    - "admin:admin:@admin:{}"
+
+
+stacks:
+  mysql1:
+    active: true
+    config: "./stacks/demo.stack.yml"
+    updateKey: "02j4hksnbwkj"
+
+
+cloudfront:
+  test1_frontend:
+    domains:
+      - "test1.apiag.de"
+      - "test2.apiag.de"
+      - "test3.apiag.de"
+    cert_type: letsencrypt
+    auto_upgrade_ssl: true
+
+  webservice-xy:
+    domains:
+      - "someTld.tld"
+      - "www.someTld.tdl"
+
