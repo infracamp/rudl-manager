@@ -9,14 +9,15 @@
 namespace RudlManager\Mod\Update;
 
 
-use OttoDB\OttoDb;
+
+use Phore\Dba\PhoreDba;
 use RudlManager\Db\CloudFrontDomain;
 
 class CloudFrontDomainDatabaseMapper implements ConfigDatabaseMapper
 {
 
     /**
-     * @var OttoDb
+     * @var PhoreDba
      */
     private $db = null;
 
@@ -33,10 +34,10 @@ class CloudFrontDomainDatabaseMapper implements ConfigDatabaseMapper
 
     /**
      * CloudFrontDomainDatabaseMapper constructor.
-     * @param OttoDb $db
+     * @param PhoreDba $db
      * @param string $serviceId
      */
-    public function __construct(OttoDb $db, $serviceId)
+    public function __construct(PhoreDba $db, $serviceId)
     {
         $this->db = $db;
         $this->serviceId = $serviceId;

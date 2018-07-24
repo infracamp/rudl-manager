@@ -9,8 +9,12 @@
 namespace RudlManager\Db;
 
 
+
+use Phore\Dba\Entity\Entity;
+
 class Stack
 {
+    use Entity;
 
     const __META__ = [
         "primaryKey" => "stackName"

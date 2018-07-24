@@ -9,8 +9,8 @@
 namespace RudlManager\Db\Migration;
 
 
-use OttoDB\Migration\Migration;
-use OttoDB\OttoDb;
+use Phore\Dba\PhoreDba;
+use Phore\DbaMigrations\Migration;
 
 class __Migration_2 implements Migration
 {
@@ -20,12 +20,12 @@ class __Migration_2 implements Migration
         return 2;
     }
 
-    public function up(OttoDb $db)
+    public function up(PhoreDba $db)
     {
         // TODO: Implement up() method.
     }
 
-    public function down(OttoDb $db)
+    public function down(PhoreDba $db)
     {
         // TODO: Implement down() method.
     }

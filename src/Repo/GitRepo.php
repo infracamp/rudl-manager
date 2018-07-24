@@ -47,7 +47,7 @@ class GitRepo
         }
 
         $cmd .= "git clone :origin :localPath";
-        return ks_exec($cmd, ["origin" => $this->origin, "localPath"=> $this->repoLocalPath]);
+        return phore_exec($cmd, ["origin" => $this->origin, "localPath"=> $this->repoLocalPath]);
     }
 
     public function gitPull()
@@ -60,6 +60,6 @@ class GitRepo
         }
 
         $cmd .= "git -C :localPath pull";
-        return ks_exec($cmd, ["localPath"=> $this->repoLocalPath]);
+        return phore_exec($cmd, ["localPath"=> $this->repoLocalPath]);
     }
 }

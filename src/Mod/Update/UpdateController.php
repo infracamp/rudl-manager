@@ -33,7 +33,7 @@ class UpdateController {
 
     protected function updateCloudFrontServices()
     {
-        $cloudfront = $this->app->confFile["cloudfront"];
+        $cloudfront = $this->app->confFile->get_yaml()["cloudfront"];
         $db = $this->app->db;
 
         $databaseNMapper = new CloudFrontServiceDatabaseMapper($db);

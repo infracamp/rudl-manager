@@ -22,7 +22,10 @@
     "php" : ">7.2",
     "phore/micro-app": "dev-master",
     "phore/theme-coreui": "dev-master",
-    "continue/otto-db": "dev-master"
+    "phore/filesystem": "dev-master",
+    "phore/system": "dev-master",
+    "phore/dba": "dev-master",
+    "phore/dba-migrations": "dev-master"
   },
   "minimum-stability": "dev"
 }

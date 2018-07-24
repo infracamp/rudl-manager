@@ -9,9 +9,8 @@
 namespace RudlManager\Mod\Setup;
 
 
-
-use OttoDB\Migration\MigrationKernel;
-use OttoDB\OttoDb;
+use Phore\Dba\PhoreDba;
+use Phore\DbaMigrations\MigrationKernel;
 use Phore\Di\Container\Producer\DiService;
 use Phore\Di\Container\Producer\DiValue;
 use Phore\MicroApp\App;
@@ -47,11 +46,11 @@ class SetupModule implements AppModule
             $repo->setAuthSshPrivateKey(CONF_REPO_SSH_PRIVATEKEY);
 
         $app->define("confFile", new DiService(function () {
-            return yaml_parse(file_get_contents(CONF_REPO_TARGET . CONF_REPO_CONF_FILE));
+            return phore_file(CONF_REPO_TARGET . CONF_REPO_CONF_FILE)->assertFile()->assertReadable();
         }));
 
         $app->define("db", new DiService(function () {
-            return OttoDb::InitDSN(self::SQLITE_DBFILE);
+            return PhoreDba::InitDSN(self::SQLITE_DBFILE);
         }));
 
         $app->define("dockerCmd", new DiService(function (){
@@ -62,9 +61,9 @@ class SetupModule implements AppModule
             MigrationKernel::RunMigrations($app->db);
 
             if ($repo->isCloned())
-                \app()->outJSON(["success"=>true, "msg"=> "Repo is already existing"]);
+                return ["success"=>true, "msg"=> "Repo is already existing"];
             $repo->gitClone();
-            \app()->outJSON(["success"=>true, "msg"=>"clone of config-directory successful"]);
+            return ["success"=>true, "msg"=>"clone of config-directory successful"];
         });
 
         if ($repo->isCloned())
