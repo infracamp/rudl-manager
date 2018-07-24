@@ -9,12 +9,14 @@
 namespace RudlManager\Mod\LetsEncrypt;
 
 
+use OttoDB\OttoDb;
 use Phore\MicroApp\App;
 use Phore\MicroApp\Controller\Controller;
 use Phore\MicroApp\Type\QueryParams;
 use Phore\MicroApp\Type\Request;
 use Phore\MicroApp\Type\Route;
 use Phore\MicroApp\Type\RouteParams;
+use RudlManager\Db\CloudFrontDomain;
 use RudlManager\Helper\Log;
 use RudlManager\Mod\KSApp;
 
@@ -32,14 +34,13 @@ class LetsEncryptRenewController
     protected $log;
 
 
-
     /**
-     * @param $domain
+     * @param CloudFrontDomain $domain
      * @return bool
      */
     protected function isValidDomain($domain) :bool
     {
-        $url = "http://$domain/.well-known/acme-challenge/verify-host-resolve";
+        $url = "http://{$domain->domain}/.well-known/acme-challenge/verify-host-resolve";
         $sha1 = sha1(gethostname());
         try {
             $domainSha1 = file_get_contents($url);
@@ -47,14 +48,23 @@ class LetsEncryptRenewController
             $domainSha1 = null;
         }
         if ($sha1 != $domainSha1) {
-            $this->log->log("CloudFrontDomain '{$domain}' is not valid: {$url} return invalid sha hostname: '{$domainSha1}'");
+            $this->log->log("CloudFrontDomain '{$domain->domain}' is not valid: {$url} return invalid sha hostname: '{$domainSha1}'");
             return false;
         }
         return true;
     }
 
-    protected function requestCert($serviceId, array $domains)
+    /**
+     * @param CloudFrontDomain[] $domains
+     * @return array
+     * @throws \Exception
+     */
+    protected function requestCert($domains)
     {
+        $domainNames = [];
+        foreach ($domains as $curDomain) {
+            $domainNames[] = $curDomain->domain;
+        }
 
         ks_exec("rm -R :workdir",  ["workdir" => LetsEncryptModule::LE_WORK_DIR]);
 
@@ -63,11 +73,11 @@ class LetsEncryptRenewController
             [
                 "webroot" => LetsEncryptModule::CHALLENGE_ROOT_DIR,
                 "workdir" => LetsEncryptModule::LE_WORK_DIR,
-                "domains" => implode (",",$domains)
+                "domains" => implode (",", $domainNames)
             ]);
 
-        $crtData = file_get_contents(LetsEncryptModule::LE_WORK_DIR . "/live/$domains[0]/fullchain.pem");
-        $crtData .= file_get_contents(LetsEncryptModule::LE_WORK_DIR . "/live/$domains[0]/privkey.pem");
+        $crtData = file_get_contents(LetsEncryptModule::LE_WORK_DIR . "/live/{$domains[0]->domain}/fullchain.pem");
+        $crtData .= file_get_contents(LetsEncryptModule::LE_WORK_DIR . "/live/{$domains[0]->domain}/privkey.pem");
 
         $crtMeta = openssl_x509_parse($crtData);
         if ($crtMeta === false) {
@@ -76,18 +86,22 @@ class LetsEncryptRenewController
         return ["crtMeta" => $crtMeta, "crtData" => $crtData, "log" => $this->log->logs];
     }
 
-    protected function cleanupDomainList(array $domainList) :array
+    /**
+     * @param CloudFrontDomain[] $domainList
+     * @return CloudFrontDomain[]
+     */
+    protected function cleanupDomainList($domainList)
     {
         $ret = [];
         foreach ($domainList as $domain) {
-            $this->log->log("Verifying domain '{$domain}' is linked to cloudfront");
+            $this->log->log("Verifying domain '{$domain->domain}' is linked to cloudfront");
             if ( ! $this->isValidDomain($domain)) {
-                $this->log->log("Warning: CloudFrontDomain '{$domain}' removed from domain list");
+                $this->log->log("Warning: CloudFrontDomain '{$domain->domain}' removed from domain list");
                 continue;
             }
             $ret[] = $domain;
         }
-        if (count($ret) == 0) {
+        if (count($ret) === 0) {
             throw new \InvalidArgumentException("Error: No domains to request or renew certificates for...");
         }
         return $ret;
@@ -95,24 +109,18 @@ class LetsEncryptRenewController
 
     /**
      * @param $serviceId
-     * @return string[]
+     * @return CloudFrontDomain[]
      */
     protected function getDomainListForService($serviceId)
     {
-        $cloudfront = $this->app->confFile["cloudfront"];
-        $foundService = null;
-        for ($i = 0; $i < count($cloudfront); $i++) {
-            if ($cloudfront[$i]["service"] == $serviceId) {
-                $foundService = $cloudfront[$i];
-                break;
-            }
+        $domains = $this->app->db->query("SELECT * FROM CloudFrontDomain WHERE serviceId = :sid", ["sid" => $serviceId])
+            ->all(CloudFrontDomain::class);
+
+        if (count($domains) === 0) {
+            throw new \InvalidArgumentException("Service '{$serviceId}' has no domains!");
         }
 
-        if ($foundService == null) {
-            throw new \InvalidArgumentException("Service '{$serviceId}' not found in config yml!");
-        }
-
-        return $foundService["domains"];
+        return $domains;
     }
 
     /**
@@ -127,9 +135,9 @@ class LetsEncryptRenewController
     {
         $this->log = new Log();
         $serviceId = $routeParams->get("serviceId", new \InvalidArgumentException("Service ID not found in route params."));
-        $domainList = $this->getDomainListForService($serviceId);
-        $domainList = $this->cleanupDomainList($domainList);
-        return $this->requestCert($serviceId, $domainList);
+        $domains = $this->getDomainListForService($serviceId);
+        $domains = $this->cleanupDomainList($domains);
+        return $this->requestCert($domains);
     }
 
 }
