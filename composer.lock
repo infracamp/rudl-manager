@@ -151,17 +151,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phore/phore-filesystem.git",
-                "reference": "83ccca01622266073923852d135f36a7bd180525"
+                "reference": "ce5688780186c139be3b1f4e0ee0a678ad5d0ad1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phore/phore-filesystem/zipball/83ccca01622266073923852d135f36a7bd180525",
-                "reference": "83ccca01622266073923852d135f36a7bd180525",
+                "url": "https://api.github.com/repos/phore/phore-filesystem/zipball/ce5688780186c139be3b1f4e0ee0a678ad5d0ad1",
+                "reference": "ce5688780186c139be3b1f4e0ee0a678ad5d0ad1",
                 "shasum": ""
             },
             "require": {
+                "ext-json": "*",
                 "ext-yaml": "*",
                 "php": ">7.1"
+            },
+            "require-dev": {
+                "nette/tester": "*"
             },
             "type": "library",
             "autoload": {
@@ -182,7 +186,7 @@
                     "email": "leuffen@continue.de"
                 }
             ],
-            "time": "2018-07-17T13:26:07+00:00"
+            "time": "2018-07-17T17:11:52+00:00"
         },
         {
             "name": "phore/html",

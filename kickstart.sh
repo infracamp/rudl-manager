@@ -15,6 +15,9 @@
 #
 
 # Error Handling.
+set -e
+set -o pipefail
+
 trap 'on_error $LINENO' ERR;
 PROGNAME=$(basename $0)
 PROGPATH="$( cd "$(dirname "$0")" ; pwd -P )"   # The absolute path to kickstart.sh
@@ -237,8 +240,8 @@ ask_user() {
 }
 
 _ci_build() {
+
     echo "CI_BUILD: Building container.. (CI_* Env is preset by gitlab-ci-runner)";
-    docker pull "$USE_PIPF_VERSION"
 
     BUILD_TAG=":$CI_BUILD_NAME"
     if [ "$CI_REGISTRY" == "" ]
@@ -247,19 +250,14 @@ _ci_build() {
         exit 1
     fi
 
-    case "$1" in
-
-    esac;
-
-    CMD="docker build -t $CI_REGISTRY_IMAGE$BUILD_TAG -f ./Dockerfile ."
-    echo "[Building] Starting '$CMD'";
+    CMD="docker build --pull -t $CI_REGISTRY_IMAGE$BUILD_TAG -f ./Dockerfile ."
+    echo "[Building] Running '$CMD' (MODE1)";
     eval $CMD
 
     echo "Logging in to: $CI_REGISTRY_USER @ $CI_REGISTRY"
-    set -eo pipefail
     echo "$CI_REGISTRY_PASSWORD" | docker login --username $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     docker push $CI_REGISTRY_IMAGE$BUILD_TAG
-    echo "Push successfull..."
+    echo "Push successful..."
     exit
 }
 

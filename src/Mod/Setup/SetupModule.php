@@ -47,7 +47,7 @@ class SetupModule implements AppModule
             $repo->setAuthSshPrivateKey(CONF_REPO_SSH_PRIVATEKEY);
 
         $app->define("confFile", new DiService(function () {
-            return phore_path(CONF_REPO_TARGET . CONF_REPO_CONF_FILE);
+            return phore_file(CONF_REPO_TARGET . CONF_REPO_CONF_FILE)->assertFile()->assertReadable();
         }));
 
         $app->define("db", new DiService(function () {

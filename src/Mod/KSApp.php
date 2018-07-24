@@ -11,6 +11,7 @@ namespace RudlManager\Mod;
 
 use OttoDB\OttoDb;
 use Phore\FileSystem\Path;
+use Phore\FileSystem\PhoreFile;
 use Phore\MicroApp\App;
 use RudlManager\Docker\DockerCmd;
 use RudlManager\Repo\GitRepo;
@@ -20,7 +21,7 @@ use RudlManager\Repo\GitRepo;
  *
  * @package KH\Plugin
  * @property-read GitRepo $confRepo
- * @property-read Path $confFile
+ * @property-read PhoreFile $confFile
  * @property-read OttoDb $db
  * @property-read DockerCmd $dockerCmd
  */

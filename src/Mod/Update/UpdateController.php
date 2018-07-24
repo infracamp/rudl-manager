@@ -35,7 +35,7 @@ class UpdateController {
 
     protected function updateCloudFrontServices()
     {
-        $cloudfront = $this->app->confFile->toFile()->get_yaml()["cloudfront"];
+        $cloudfront = $this->app->confFile->get_yaml()["cloudfront"];
         $db = $this->app->db;
 
         $savedServices = [];
