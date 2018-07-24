@@ -11,13 +11,45 @@ namespace RudlManager\Helper;
 class IdDiffTool
 {
 
-    private $idDiffToolProcessor;
+    /**
+     * @var callable[]
+     */
+    private $callbacks = [];
 
-    public function __construct(IdDiffToolProcessor $idDiffToolProcessor)
+    public function __construct()
     {
-        $this->idDiffToolProcessor = $idDiffToolProcessor;
+        $this->callbacks = [
+            "new" => function(){},
+            "delete" => function(){},
+            "modified" => function(){},
+            "unmodified" => function(){}
+        ];
     }
 
+
+    public function onNew(callable $fn) : self
+    {
+        $this->callbacks["new"] = $fn;
+        return $this;
+    }
+
+    public function onModified(callable $fn) : self
+    {
+        $this->callbacks["modified"] = $fn;
+        return $this;
+    }
+
+    public function onUnmodified(callable $fn) : self
+    {
+        $this->callbacks["unmodified"] = $fn;
+        return $this;
+    }
+
+    public function onDelete(callable $fn) : self
+    {
+        $this->callbacks["delete"] = $fn;
+        return $this;
+    }
 
     public function process(array $newData, array $oldData, string $order="NMD")
     {
@@ -27,7 +59,7 @@ class IdDiffTool
                     // New Items
                     $newItems = array_diff_key($newData, $oldData);
                     foreach ($newItems as $key => $data) {
-                        $this->idDiffToolProcessor->newElement($key, $data);
+                        $this->callbacks["new"]($key, $data);
                     }
                     break;
 
@@ -35,7 +67,7 @@ class IdDiffTool
                     // deleted Items
                     $delItems = array_diff_key($oldData, $newData);
                     foreach ($delItems as $key => $data) {
-                        $this->idDiffToolProcessor->deletedElement($key, $data);
+                        $$this->callbacks["delete"]($key, $data);
                     }
                     break;
 
@@ -44,9 +76,9 @@ class IdDiffTool
                     foreach ($modItems as $key => $data) {
                         $changedKeys = array_keys(array_diff_assoc($newData[$key], $oldData[$key]));
                         if (count($changedKeys) == 0) {
-                            $this->idDiffToolProcessor->unmodifiedElement($key, $newData[$key]);
+                            $this->callbacks["unmodified"]($key, $newData[$key]);
                         } else {
-                            $this->idDiffToolProcessor->modifiedElement($key, $newData[$key], $oldData[$key], $changedKeys);
+                            $this->callbacks["modified"]($key, $newData[$key], $oldData[$key], $changedKeys);
                         }
                     }
                     break;

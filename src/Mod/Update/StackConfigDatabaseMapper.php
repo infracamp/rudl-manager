@@ -38,7 +38,7 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper, IdDiffToolProce
     public function update(array $config)
     {
         $oldIds = [];
-        $this->db->query("SELECT * FROM Stack")->each(function(array $row) use (&$oldIds) {
+        $this->db->query("SELECT * FROM Stack WHERE source='STATIC'")->each(function(array $row) use (&$oldIds) {
             $oldIds[$row["stackName"]] = $row;
         });
 
@@ -49,7 +49,12 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper, IdDiffToolProce
             $newIds[$key] = $data;
         }
 
-        $updater = new IdDiffTool($this);
+        $updater = new IdDiffTool();
+        $updater
+            ->onNew([$this, "newElement"])
+            ->onDelete([$this, "deletedElement"])
+            ->onModified([$this, "modifiedElement"])
+            ->onUnmodified([$this, "unmodifiedElement"]);
         $updater->process($newIds, $oldIds);
 
     }
@@ -62,7 +67,7 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper, IdDiffToolProce
      *
      * @return mixed
      */
-    public function newElement($key, $data)
+    private function newElement($key, $data)
     {
         $stack = Stack::Cast($data);
         $stack->stackName = $key;
@@ -80,24 +85,24 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper, IdDiffToolProce
      *
      * @return mixed
      */
-    public function modifiedElement(
+    private function modifiedElement(
         $key,
         $oldData,
         $newData,
         array $changedKeys
     ) {
-        $stack = Stack::Cast($this->db->load(Stack::class, ["stackName"=>$key]));
+        $stack = Stack::Load(["stackName"=>$key]);
         $stack->stackName = $key;
 
     }
 
-    public function unmodifiedElement($key, $data)
+    private function unmodifiedElement($key, $data)
     {
     }
 
-    public function deletedElement($key, $oldData)
+    private function deletedElement($key, $oldData)
     {
-        $stack = Stack::Cast($this->db->load(Stack::class, ["stackName"=>$key]));
+        $stack = Stack::Load(["stackName"=>$key]);
         $this->db->delete($stack);
     }
 }
