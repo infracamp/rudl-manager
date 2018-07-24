@@ -23,7 +23,9 @@
     "phore/micro-app": "dev-master",
     "phore/theme-coreui": "dev-master",
     "phore/filesystem": "dev-master",
-    "continue/otto-db": "dev-master"
+    "phore/system": "dev-master",
+    "phore/dba": "dev-master",
+    "phore/dba-migrations": "dev-master"
   },
   "minimum-stability": "dev"
 }

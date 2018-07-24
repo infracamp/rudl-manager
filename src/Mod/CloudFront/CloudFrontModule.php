@@ -9,9 +9,10 @@
 namespace RudlManager\Mod\CloudFront;
 
 
-use KH\Mod\KSApp;
+
 use Phore\MicroApp\App;
 use Phore\MicroApp\AppModule;
+use RudlManager\Mod\KSApp;
 
 class CloudFrontModule implements AppModule
 {

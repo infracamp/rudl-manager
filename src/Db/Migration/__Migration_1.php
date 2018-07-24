@@ -9,9 +9,10 @@
 namespace RudlManager\Db\Migration;
 
 
-use OttoDB\Migration\InitialMigration;
-use OttoDB\Migration\Migration;
-use OttoDB\OttoDb;
+
+use Phore\Dba\PhoreDba;
+use Phore\DbaMigrations\InitialMigration;
+use Phore\DbaMigrations\Migration;
 
 class __Migration_1 implements Migration
 {
@@ -21,7 +22,7 @@ class __Migration_1 implements Migration
         return 1;
     }
 
-    public function up(OttoDb $db)
+    public function up(PhoreDba $db)
     {
 
         $db->query('CREATE TABLE CloudFrontService (
@@ -70,7 +71,7 @@ class __Migration_1 implements Migration
         )');
     }
 
-    public function down(OttoDb $db)
+    public function down(PhoreDba $db)
     {
         $db->query("DROP TABLE CloudFrontDomain;");
         $db->query("DROP TABLE CloudFrontService;");

@@ -9,8 +9,8 @@
 namespace RudlManager\Mod\Update;
 
 
-use OttoDB\OttoDb;
-use Phore\FileSystem\Path;
+
+use Phore\Dba\PhoreDba;
 use Phore\FileSystem\PhoreFile;
 use RudlManager\Db\Stack;
 use RudlManager\Helper\IdDiffTool;
@@ -19,7 +19,7 @@ use RudlManager\Helper\IdDiffToolProcessor;
 class StackConfigDatabaseMapper implements ConfigDatabaseMapper, IdDiffToolProcessor
 {
     /**
-     * @var OttoDb
+     * @var PhoreDba
      */
     private $db;
 
@@ -28,7 +28,7 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper, IdDiffToolProce
      */
     private $configFile;
 
-    public function __construct(OttoDb $db, PhoreFile $configFile)
+    public function __construct(PhoreDba $db, PhoreFile $configFile)
     {
         $this->db = $db;
         $this->configFile = $configFile;

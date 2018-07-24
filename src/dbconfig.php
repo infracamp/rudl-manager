@@ -9,15 +9,15 @@
 namespace RudlManager;
 
 
-use OttoDB\Migration\MigrationKernel;
-use OttoDB\Migration\MigrationManager;
-use OttoDB\Migration\SqliteMigrationRegistry;
-use OttoDB\OttoDb;
+use Phore\Dba\PhoreDba;
+use Phore\DbaMigrations\MigrationKernel;
+use Phore\DbaMigrations\MigrationManager;
+use Phore\DbaMigrations\Registry\SqliteMigrationRegistry;
 use RudlManager\Db\Migration\__Migration_1;
 
-MigrationKernel::AddOnMigration(function (OttoDb $ottoDb) {
+MigrationKernel::AddOnMigration(function (PhoreDba $dba) {
     $manager = new MigrationManager(new SqliteMigrationRegistry());
 
     // Change this to the highest Migration:
-    $manager->upgrade($ottoDb, new __Migration_1());
+    $manager->upgrade($dba, new __Migration_1());
 });

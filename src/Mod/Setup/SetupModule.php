@@ -9,9 +9,8 @@
 namespace RudlManager\Mod\Setup;
 
 
-
-use OttoDB\Migration\MigrationKernel;
-use OttoDB\OttoDb;
+use Phore\Dba\PhoreDba;
+use Phore\DbaMigrations\MigrationKernel;
 use Phore\Di\Container\Producer\DiService;
 use Phore\Di\Container\Producer\DiValue;
 use Phore\MicroApp\App;
@@ -51,7 +50,7 @@ class SetupModule implements AppModule
         }));
 
         $app->define("db", new DiService(function () {
-            return OttoDb::InitDSN(self::SQLITE_DBFILE);
+            return PhoreDba::InitDSN(self::SQLITE_DBFILE);
         }));
 
         $app->define("dockerCmd", new DiService(function (){
