@@ -15,8 +15,6 @@
 #
 
 # Error Handling.
-set -e
-set -o pipefail
 
 trap 'on_error $LINENO' ERR;
 PROGNAME=$(basename $0)
@@ -64,12 +62,12 @@ command -v docker >/dev/null 2>&1 || { echo -e "$COLOR_LIGHT_RED I require docke
 
 
 
-_KICKSTART_DOC_URL="https://github.com/c7lab/kickstart/"
-_KICKSTART_UPGRADE_URL="https://raw.githubusercontent.com/c7lab/kickstart/master/opt/kickstart.sh"
-_KICKSTART_RELEASE_NOTES_URL="https://raw.githubusercontent.com/c7lab/kickstart/master/opt/kickstart-release-notes.txt"
-_KICKSTART_VERSION_URL="https://raw.githubusercontent.com/c7lab/kickstart/master/opt/kickstart-release.txt"
+_KICKSTART_DOC_URL="https://github.com/infracamp/kickstart/"
+_KICKSTART_UPGRADE_URL="https://raw.githubusercontent.com/infracamp/kickstart/master/dist/kickstart.sh"
+_KICKSTART_RELEASE_NOTES_URL="https://raw.githubusercontent.com/infracamp/kickstart/master/dist/kickstart-release-notes.txt"
+_KICKSTART_VERSION_URL="https://raw.githubusercontent.com/infracamp/kickstart/master/dist/kickstart-release.txt"
 
-_KICKSTART_CURRENT_VERSION="1.1.1"
+_KICKSTART_CURRENT_VERSION="1.2.0"
 
 ##
 # This variables can be overwritten by ~/.kickstartconfig
@@ -77,8 +75,7 @@ _KICKSTART_CURRENT_VERSION="1.1.1"
 KICKSTART_WIN_PATH=""
 
 # Publish ports - separated by semikolon (define it in .kickstartconfig)
-KICKSTART_PORTS="80:4200/tcp"
-# KICKSTART_PORTS="80:4200/tcp;81:4450/udp"
+KICKSTART_PORTS="80:80/tcp;4000:4000/tcp;4100:4100/tcp;4200:4200/tcp;4000:4000/udp"
 
 KICKSTART_DOCKER_OPTS=""
 KICKSTART_DOCKER_RUN_OPTS=""
@@ -92,7 +89,7 @@ fi
 if [ -e "$PROGPATH/.kickstartconfig" ]
 then
     echo "Loading $PROGPATH/.kickstartconfig (This is risky if you - abort if unsure)"
-    sleep 5
+    sleep 1
     # @todo Search for .kickstartconfig in gitignore to verify the user wants this.
     . $PROGPATH/.kickstartconfig
 fi
@@ -137,7 +134,7 @@ _usage() {
 _print_header() {
     echo -e $COLOR_WHITE "
 
- C7Lab's
+ infracamp's
    ▄█   ▄█▄  ▄█   ▄████████    ▄█   ▄█▄    ▄████████     ███        ▄████████    ▄████████     ███
   ███ ▄███▀ ███  ███    ███   ███ ▄███▀   ███    ███ ▀█████████▄   ███    ███   ███    ███ ▀█████████▄
   ███▐██▀   ███▌ ███    █▀    ███▐██▀     ███    █▀     ▀███▀▀██   ███    ███   ███    ███    ▀███▀▀██
@@ -147,10 +144,10 @@ _print_header() {
   ███ ▀███▄ ███  ███    ███   ███ ▀███▄    ▄█    ███     ███       ███    ███   ███    ███     ███
   ███   ▀█▀ █▀   ████████▀    ███   ▀█▀  ▄████████▀     ▄████▀     ███    █▀    ███    ███    ▄████▀
   ▀                           ▀                                                 ███    ███
-                                                                                      happy containers
+  http://infracamp.org                                                                 happy containers
   " $COLOR_YELLOW "
 +-------------------------------------------------------------------------------------------------------+
-| C7Lab Kickstart - DEVELOPER MODE                                                                      |
+| Infracamp's Kickstart - DEVELOPER MODE                                                                |
 | Version: $_KICKSTART_CURRENT_VERSION
 | Flavour: $USE_PIPF_VERSION (defined in 'from:'-section of .kick.yml)"
 
@@ -163,9 +160,10 @@ _print_header() {
         echo "| UPDATE AVAILABLE: Head Version: $KICKSTART_NEWEST_VERSION"
         echo "| To Upgrade Version: Run ./kickstart.sh --upgrade                              "
         echo "|                                                                                 "
+        sleep 5
     fi;
 
-    echo "| More information: https://github.com/continue/kickstart                         "
+    echo "| More information: https://github.com/infracamp/kickstart                         "
     echo "| Or ./kickstart.sh help                                                                                |"
     echo "+-------------------------------------------------------------------------------------------------------+"
 
@@ -264,6 +262,7 @@ _ci_build() {
 
 
 DOCKER_OPT_PARAMS=$KICKSTART_DOCKER_RUN_OPTS;
+
 if [ -e "$HOME/.ssh" ]
 then
     echo "Mounting $HOME/.ssh..."
@@ -274,6 +273,12 @@ if [ -e "$HOME/.gitconfig" ]
 then
     echo "Mounting $HOME/.gitconfig..."
     DOCKER_OPT_PARAMS="$DOCKER_OPT_PARAMS -v $HOME/.gitconfig:/home/user/.gitconfig";
+fi
+
+if [ -e "$HOME/.bash_history" ]
+then
+    echo "Mounting $HOME/.bash_history..."
+    DOCKER_OPT_PARAMS="$DOCKER_OPT_PARAMS -v $HOME/.bash_history:/home/user/.bash_history";
 fi
 
 if [ -e "$PROGPATH/.env" ]
@@ -302,18 +307,20 @@ run_container() {
 
     docker rm $CONTAINER_NAME
     echo -e $COLOR_WHITE "==> [$0] STARTING CONTAINER (docker run): Running container in dev-mode..." $COLOR_NC
-    docker $KICKSTART_DOCKER_OPTS run -it                                      \
-        -v "$PROGPATH/:/opt/"                           \
-        -e "DEV_CONTAINER_NAME=$CONTAINER_NAME"         \
-        -e "DEV_TTYID=[MAIN]"                           \
-        -e "DEV_UID=$UID"                               \
-        -e "LINES=$LINES"                               \
-        -e "COLUMNS=$COLUMNS"                           \
-        -e "TERM=$TERM"                                 \
-        -e "DEV_MODE=1"                                 \
-        $DOCKER_OPT_PARAMS                              \
-        --name $CONTAINER_NAME                          \
-        $USE_PIPF_VERSION $ARGUMENT
+    cmd="docker $KICKSTART_DOCKER_OPTS run -it                \
+            -v \"$PROGPATH/:/opt/\"                           \
+            -e \"DEV_CONTAINER_NAME=$CONTAINER_NAME\"         \
+            -e \"DEV_TTYID=[MAIN]\"                           \
+            -e \"DEV_UID=$UID\"                               \
+            -e \"LINES=$LINES\"                               \
+            -e \"COLUMNS=$COLUMNS\"                           \
+            -e \"TERM=$TERM\"                                 \
+            -e \"DEV_MODE=1\"                                 \
+            $DOCKER_OPT_PARAMS                              \
+            --name $CONTAINER_NAME                          \
+            $USE_PIPF_VERSION $ARGUMENT"
+    echo [exec] $cmd
+    eval $cmd
 
     status=$?
     if [[ $status -ne 0 ]]
@@ -336,7 +343,7 @@ then
     echo "# Kickstart container config file - see https://gitub.com/c7lab/kickstart" > $PROGPATH/.kick.yml
     echo "# Run ./kickstart.sh to start a development-container for this project" >> $PROGPATH/.kick.yml
     echo "version: 1" >> $PROGPATH/.kick.yml
-    echo 'from: "continue/kickstart"' >> $PROGPATH/.kick.yml
+    echo 'from: "infracamp/kickstart-flavor-gaia"' >> $PROGPATH/.kick.yml
     echo "File created. See $_KICKSTART_DOC_URL for more information";
     echo ""
     sleep 2
@@ -380,7 +387,7 @@ while [ "$#" -gt 0 ]; do
 
     --skel)
         ask_user "Do you want to overwrite existing files with skeleton?"
-        curl https://codeload.github.com/c7lab/kickstart-skel/tar.gz/master | tar -xzv --strip-components=2 kickstart-skel-master/$2/ -C ./
+        curl https://codeload.github.com/infracamp/kickstart-skel/tar.gz/master | tar -xzv --strip-components=2 kickstart-skel-master/$2/ -C ./
         exit 0;;
 
     --ci-build)
