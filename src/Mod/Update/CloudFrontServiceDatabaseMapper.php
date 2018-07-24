@@ -12,6 +12,7 @@ namespace RudlManager\Mod\Update;
 
 use Phore\Dba\PhoreDba;
 use RudlManager\Db\CloudFrontService;
+use RudlManager\Mod\KSApp;
 
 class CloudFrontServiceDatabaseMapper implements ConfigDatabaseMapper
 {
@@ -94,5 +95,13 @@ class CloudFrontServiceDatabaseMapper implements ConfigDatabaseMapper
         }
         return $this;
     }
+
+
+    public static function Run(KSApp $app)
+    {
+        $s = new self($app->db);
+        $s->update($app->confFile->get_yaml());
+    }
+
 
 }

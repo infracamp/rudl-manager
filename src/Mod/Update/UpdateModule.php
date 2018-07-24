@@ -26,7 +26,14 @@ class UpdateModule implements AppModule {
      */
     public function register(App $app)
     {
-        $app->router->delegate("/api/v1/update", UpdateController::class);
+        $app->router->get("/api/v1/update", function () use ($app) {
+            $app->confRepo->gitPull();
+            $app->triggerEvent("conf-update");
+            return ["success"=>"true"];
+        });
+
+        $app->onEvent("conf-update", [CloudFrontServiceDatabaseMapper::class, "Run"]);
+        $app->onEvent("conf-update", [StackConfigDatabaseMapper::class, "Run"]);
     }
 
 }

@@ -14,9 +14,10 @@ use Phore\Dba\PhoreDba;
 use Phore\FileSystem\PhoreFile;
 use RudlManager\Db\Stack;
 use RudlManager\Helper\IdDiffTool;
-use RudlManager\Helper\IdDiffToolProcessor;
 
-class StackConfigDatabaseMapper implements ConfigDatabaseMapper, IdDiffToolProcessor
+use RudlManager\Mod\KSApp;
+
+class StackConfigDatabaseMapper implements ConfigDatabaseMapper
 {
     /**
      * @var PhoreDba
@@ -104,5 +105,12 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper, IdDiffToolProce
     {
         $stack = Stack::Load(["stackName"=>$key]);
         $this->db->delete($stack);
+    }
+
+
+    public static function Run(KSApp $app)
+    {
+        $p = new self($app->db, $app->confFile);
+        $p->update($app->confFile->get_yaml());
     }
 }
