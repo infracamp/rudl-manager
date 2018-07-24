@@ -1,7 +1,7 @@
 # Kickstart container config file - see https://gitub.com/c7lab/kickstart
 # Run ./kickstart.sh to start a development-container for this project
 version: 1
-from: "infracamp/kickstart-flavor-gaia"
+from: "infracamp/kickstart-flavor-gaia:testing"
 
 apache_fallback_resource: "/index.php"
 
@@ -18,4 +18,7 @@ command:
     - "sudo chmod 777 /srv"
 
   run:
-    - "curl http://localhost:4200/hooks/container-start"
+    - "curl http://localhost/hooks/container-start"
+
+  update:
+    - "curl http://localhost/api/v1/update"

@@ -27,17 +27,14 @@ class UpdateController {
     public function on_get() :array
     {
         $this->app->confRepo->gitPull();
-        return ["success"=>true, "msg"=>"clone of config-directory successful"];
-    }
 
-
-    protected function updateCloudFrontServices()
-    {
         $cloudfront = $this->app->confFile->get_yaml()["cloudfront"];
         $db = $this->app->db;
 
         $databaseNMapper = new CloudFrontServiceDatabaseMapper($db);
         $databaseNMapper->update($cloudfront);
-        return $this;
+
+        return ["success"=>true, "msg"=>"clone of config-directory successful"];
     }
+
 }

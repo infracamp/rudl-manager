@@ -49,14 +49,15 @@ class CloudFrontServiceDatabaseMapper implements ConfigDatabaseMapper
                 $curService = $this->orphanedServices[$serviceId];
                 unset ($this->orphanedServices[$serviceId]);
 
-                $curService->cert_type = $serviceConfig["cert_type"];
+                $curService->cert_type = strtoupper($serviceConfig["cert_type"]);
                 $curService->auto_upgrade_ssl = $serviceConfig["auto_upgrade_ssl"];
                 $this->db->update($curService);
 
             } else {
                 $curService = new CloudFrontService();
                 $curService->serviceId = $serviceId;
-                $curService->cert_type = $serviceConfig["cert_type"];
+                $curService->source = "STATIC";
+                $curService->cert_type = strtoupper($serviceConfig["cert_type"]);
                 $curService->auto_upgrade_ssl = $serviceConfig["auto_upgrade_ssl"];
                 $this->db->insert($curService);
             }
@@ -75,8 +76,8 @@ class CloudFrontServiceDatabaseMapper implements ConfigDatabaseMapper
      */
     private function loadSavedServices()
     {
-        $this->db->query("SELECT * FROM CloudFrontService")->each(function(array $row) {
-            $curService = CloudFrontService::Cast($row);
+        $this->db->query("SELECT serviceId FROM CloudFrontService WHERE source = 'STATIC'")->each(function(array $row) {
+            $curService = CloudFrontService::Load($row["serviceId"]);
             $this->orphanedServices[$curService->serviceId] = $curService;
         });
         return $this;

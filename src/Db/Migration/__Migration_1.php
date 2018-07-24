@@ -32,6 +32,7 @@ class __Migration_1 implements Migration
             cert_type TEXT CHECK(cert_type IN (\'LETSENCRYPT\', \'NONE\', \'STATIC\')) NOT NULL,
             auto_upgrade_ssl INTEGER NOT NULL DEFAULT \'0\',
             
+            cert_serial TEXT,
             cert_data BLOB,
             cert_valid_from TEXT,
             cert_valid_till TEXT,

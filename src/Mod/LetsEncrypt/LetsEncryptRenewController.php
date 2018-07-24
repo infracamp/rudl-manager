@@ -17,6 +17,7 @@ use Phore\MicroApp\Type\Request;
 use Phore\MicroApp\Type\Route;
 use Phore\MicroApp\Type\RouteParams;
 use RudlManager\Db\CloudFrontDomain;
+use RudlManager\Db\CloudFrontService;
 use RudlManager\Helper\Log;
 use RudlManager\Mod\KSApp;
 
@@ -83,6 +84,7 @@ class LetsEncryptRenewController
         if ($crtMeta === false) {
             throw new \Exception("Invalid x509 cert data." . openssl_error_string());
         }
+
         return ["crtMeta" => $crtMeta, "crtData" => $crtData, "log" => $this->log->logs];
     }
 
@@ -113,7 +115,7 @@ class LetsEncryptRenewController
      */
     protected function getDomainListForService($serviceId)
     {
-        $domains = $this->app->db->query("SELECT * FROM CloudFrontDomain WHERE serviceId = :sid", ["sid" => $serviceId])
+        $domains = $this->app->db->query("SELECT * FROM CloudFrontDomain WHERE serviceId = ?", [$serviceId])
             ->all(CloudFrontDomain::class);
 
         if (count($domains) === 0) {
@@ -121,6 +123,18 @@ class LetsEncryptRenewController
         }
 
         return $domains;
+    }
+
+    protected function updateSingleService($serviceId) {
+        $service = CloudFrontService::Load($serviceId);
+
+        $domains = $this->getDomainListForService($serviceId);
+        $domains = $this->cleanupDomainList($domains);
+
+        $certData = $this->requestCert($domains);
+
+        $service->cert_data = $certData["crtData"];
+        return $certData;
     }
 
     /**
@@ -135,9 +149,7 @@ class LetsEncryptRenewController
     {
         $this->log = new Log();
         $serviceId = $routeParams->get("serviceId", new \InvalidArgumentException("Service ID not found in route params."));
-        $domains = $this->getDomainListForService($serviceId);
-        $domains = $this->cleanupDomainList($domains);
-        return $this->requestCert($domains);
+        return $this->updateSingleService($serviceId);
     }
 
 }

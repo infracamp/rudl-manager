@@ -17,7 +17,7 @@ class CloudFrontDomain
     use Entity;
 
     const __META__ = [
-        "primary-key" => "domain"
+        "primaryKey" => "domain"
     ];
 
     public $domain;

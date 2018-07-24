@@ -30,4 +30,5 @@ cloudfront:
     domains:
       - "someTld.tld"
       - "www.someTld.tdl"
-
+    cert_type: none
+    auto_upgrade_ssl: false

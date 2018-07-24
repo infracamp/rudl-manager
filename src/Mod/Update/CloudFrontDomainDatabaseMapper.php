@@ -78,9 +78,9 @@ class CloudFrontDomainDatabaseMapper implements ConfigDatabaseMapper
     private function loadSavedDomains()
     {
         $serviceId = $this->serviceId;
-        $this->db->query("SELECT * FROM CloudFrontDomain WHERE serviceId = :serviceId", ["serviceId" => $serviceId])
+        $this->db->query("SELECT domain FROM CloudFrontDomain WHERE serviceId = ?", [$serviceId])
             ->each(function (array $row) {
-                $curDomain = CloudFrontDomain::Cast($row);
+                $curDomain = CloudFrontDomain::Load($row["domain"]);
                 $this->orphanedDomains[$curDomain->domain] = $curDomain;
             }
         );

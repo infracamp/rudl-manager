@@ -17,7 +17,7 @@ class CloudFrontService
     use Entity;
 
     const __META__ = [
-        "primary-key" => "serviceId"
+        "primaryKey" => "serviceId"
     ];
 
     /**
@@ -45,7 +45,7 @@ class CloudFrontService
      */
     public $auto_upgrade_ssl = 0;
 
-    public $cert_id;
+    public $cert_serial;
     public $cert_data;
     public $cert_valid_from;
     public $cert_valid_till;
