@@ -29,10 +29,16 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
      */
     private $configFile;
 
-    public function __construct(PhoreDba $db, PhoreFile $configFile)
+    /**
+     * @var KSApp
+     */
+    private $app;
+
+    public function __construct(PhoreDba $db, PhoreFile $configFile, KSApp $app)
     {
         $this->db = $db;
         $this->configFile = $configFile;
+        $this->app = $app;
     }
 
 
@@ -71,11 +77,13 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
      */
     public function newElement($key, $data)
     {
-        $stack = Stack::Load($data);
+        //$stack = Stack::Load($data);
+        $stack = new Stack();
         $stack->stackName = $key;
         $stack->source = "STATIC";
         $stack->stackConfig = $data["config"];
 
+        logInfo("Insert stack: $key");
         $this->db->insert($stack);
     }
 
@@ -97,7 +105,12 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
     ) {
         $stack = Stack::Load(["stackName"=>$key]);
         $stack->stackName = $key;
-        $stack->stackConfig = $newData["config"];
+        $stack->stackConfig = $newData["stackConfig"];
+
+
+        //$this->app->dockerCmd->stackDeploy($stack->stackName, $stack->stackConfig);
+
+        logInfo("Update stack: $key");
         $this->db->update($stack);
     }
 
@@ -108,13 +121,15 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
     public function deletedElement($key, $oldData)
     {
         $stack = Stack::Load(["stackName"=>$key]);
+        logInfo("Delete stack: $key");
+        //$this->app->dockerCmd->stackRm($stack->stackName);
         $this->db->delete($stack);
     }
 
 
     public static function Update(KSApp $app)
     {
-        $p = new self($app->db, $app->confFile);
+        $p = new self($app->db, $app->confFile, $app);
         $p->doUpdate($app->confFile->get_yaml());
     }
 
@@ -122,7 +137,7 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
     {
         $app->db->query("SELECT stackName FROM Stack WHERE source='STATIC'")->each(function(array $row) use ($app){
             $stack = Stack::Load($row["stackName"]);
-            $app->dockerCmd->stackDeploy($stack->name. $stack->stackConfig);
+            $app->dockerCmd->stackDeploy($stack->stackName, $stack->stackConfig);
         });
     }
 

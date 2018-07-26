@@ -18,6 +18,7 @@ class Stack
 
     const __META__ = [
         "primaryKey" => "stackName"
+
     ];
 
     public $stackName;
