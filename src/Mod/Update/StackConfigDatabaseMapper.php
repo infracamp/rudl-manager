@@ -52,10 +52,10 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
 
         $updater = new IdDiffTool();
         $updater
-            ->onNew([$this, "newElement"])
-            ->onDelete([$this, "deletedElement"])
-            ->onModified([$this, "modifiedElement"])
-            ->onUnmodified([$this, "unmodifiedElement"]);
+            ->onNew(function($key, $data) { return $this->newElement($key, $data); } )
+            ->onDelete(function($key, $data) { return $this->deletedElement($key, $data); })
+            ->onModified(function($key, $newData, $oldData, $changedKeys) { return $this->modifiedElement($key, $oldData, $newData, $changedKeys); })
+            ->onUnmodified(function($key, $data) { return $this->unmodifiedElement($key, $data); });
         $updater->process($newIds, $oldIds);
 
     }
@@ -70,7 +70,7 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
      */
     private function newElement($key, $data)
     {
-        $stack = Stack::Cast($data);
+        $stack = Stack::Load($data);
         $stack->stackName = $key;
         $stack->source = "STATIC";
         $this->db->insert($stack);
