@@ -22,3 +22,6 @@ command:
 
   update:
     - "curl http://localhost/api/v1/update | python -m json.tool"
+
+  get_cloudfront:
+    - "curl http://localhost/api/v1/cloudfront/get_config | python -m json.tool"
