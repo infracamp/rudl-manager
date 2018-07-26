@@ -8,6 +8,8 @@
 
 namespace RudlManager\Helper;
 
+use http\Exception\InvalidArgumentException;
+
 class IdDiffTool
 {
 

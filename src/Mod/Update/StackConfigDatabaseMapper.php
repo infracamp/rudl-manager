@@ -69,7 +69,7 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
      *
      * @return mixed
      */
-    private function newElement($key, $data)
+    public function newElement($key, $data)
     {
         $stack = Stack::Load($data);
         $stack->stackName = $key;
@@ -89,7 +89,7 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
      *
      * @return mixed
      */
-    private function modifiedElement(
+    public function modifiedElement(
         $key,
         $oldData,
         $newData,
@@ -101,11 +101,11 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
         $this->db->update($stack);
     }
 
-    private function unmodifiedElement($key, $data)
+    public function unmodifiedElement($key, $data)
     {
     }
 
-    private function deletedElement($key, $oldData)
+    public function deletedElement($key, $oldData)
     {
         $stack = Stack::Load(["stackName"=>$key]);
         $this->db->delete($stack);
