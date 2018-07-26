@@ -44,7 +44,7 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
         });
 
         $newIds = [];
-        foreach ($config["stack"] as $key => $data) {
+        foreach ($config["stacks"] as $key => $data) {
             $data["stackConfig"] = $this->configFile->withSubPath($data["config"])->assertFile()->get_contents();
             $data["stackName"] = $key;
             $newIds[$key] = $data;
