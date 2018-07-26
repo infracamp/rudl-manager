@@ -18,7 +18,7 @@ command:
     - "sudo chmod 777 /srv"
 
   run:
-    - "curl http://localhost/hooks/container-start "
+    - "curl http://localhost/hooks/container-start | python -m json.tool"
 
   update:
-    - "curl http://localhost/api/v1/update"
+    - "curl http://localhost/api/v1/update | python -m json.tool"
