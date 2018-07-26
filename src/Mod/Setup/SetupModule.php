@@ -17,6 +17,7 @@ use Phore\MicroApp\App;
 use Phore\MicroApp\AppModule;
 use Phore\MicroApp\Type\RouteParams;
 use RudlManager\Docker\DockerCmd;
+use RudlManager\Helper\Log;
 use RudlManager\Mod\KSApp;
 use RudlManager\Repo\GitRepo;
 
@@ -58,12 +59,23 @@ class SetupModule implements AppModule
         }));
 
         $app->router->get("/hooks/container-start", function () use ($app, $repo) {
+            logInfo("/hooks/container-start called.");
             MigrationKernel::RunMigrations($app->db);
 
-            if ($repo->isCloned())
-                return ["success"=>true, "msg"=> "Repo is already existing"];
-            $repo->gitClone();
-            return ["success"=>true, "msg"=>"clone of config-directory successful"];
+            if ( ! $repo->isCloned()) {
+                logInfo("cloning repository");
+                $repo->gitClone();
+            }
+            logInfo("trigger event: conf-startup");
+            $app->triggerEvent("conf-startup");
+
+            logInfo("pulling changes");
+            $repo->gitPull();
+
+            logInfo("trigger event: conf-update");
+            $app->triggerEvent("conf-update");
+
+            return ["success"=>true, "msg"=>"clone of config-directory successful", "log" => Log::Get()->logs];
         });
 
         if ($repo->isCloned())

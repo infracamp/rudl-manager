@@ -9,9 +9,13 @@
 namespace RudlManager\Mod\Update;
 
 
+use RudlManager\Mod\KSApp;
+
 interface ConfigDatabaseMapper
 {
 
-    public function update(array $config);
+    public static function Update(KSApp $app);
+
+    public static function Startup(KSApp $app);
 
 }

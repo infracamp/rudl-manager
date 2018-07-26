@@ -41,7 +41,7 @@ class CloudFrontServiceDatabaseMapper implements ConfigDatabaseMapper
      * @return $this
      * @throws \Exception
      */
-    public function update(array $config)
+    public function doUpdate(array $config)
     {
         $this->loadSavedServices();
 
@@ -97,11 +97,14 @@ class CloudFrontServiceDatabaseMapper implements ConfigDatabaseMapper
     }
 
 
-    public static function Run(KSApp $app)
+    public static function Update(KSApp $app)
     {
         $s = new self($app->db);
-        $s->update($app->confFile->get_yaml());
+        $s->doUpdate($app->confFile->get_yaml());
     }
 
+    public static function Startup(KSApp $app)
+    {
 
+    }
 }

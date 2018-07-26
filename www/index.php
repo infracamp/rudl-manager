@@ -10,6 +10,7 @@ namespace App;
 
 use Phore\MicroApp\Handler\JsonExceptionHandler;
 use Phore\MicroApp\Handler\JsonResponseHandler;
+use RudlManager\Helper\Log;
 use RudlManager\Mod\CloudFront\CloudFrontModule;
 use RudlManager\Mod\DockerApi\DockerApiMod;
 use RudlManager\Mod\KSApp;
@@ -26,8 +27,14 @@ $app->acl->addRule(aclRule()->route("/hooks/*")->ALLOW());
 $app->acl->addRule(aclRule()->route("/api/*")->ALLOW());
 
 $app->activateExceptionErrorHandlers();
-$app->setResponseHandler(new JsonResponseHandler());
-$app->setOnExceptionHandler(new JsonExceptionHandler());
+$app->setResponseHandler((new JsonResponseHandler())->addFilter(function (array $data) {
+    $data["log"] = Log::Get()->logs;
+    return $data;
+}));
+$app->setOnExceptionHandler((new JsonExceptionHandler())->addFilter(function (array $data) {
+    $data["log"] = Log::Get()->logs;
+    return $data;
+}));
 
 // Add Modules below
 $app->addModule(new SetupModule());

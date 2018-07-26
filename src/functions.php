@@ -7,3 +7,8 @@
  */
 
 
+function logInfo($msg)
+{
+    $bt = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 1);
+    \RudlManager\Helper\Log::Get()->log($msg, $bt[0]);
+}

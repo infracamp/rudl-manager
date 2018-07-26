@@ -36,6 +36,24 @@ class DockerCmd
 
     /**
      * @param $stackName
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function stackRm($stackName)
+    {
+        return $this->dockerExec("stack rm ?", [$stackName], false);
+    }
+
+    public function stackDeploy (string $stackName, string $composeYaml)
+    {
+        $yamlFile = phore_file(tempnam("/tmp", "stack"))->set_contents($composeYaml);
+        $this->dockerExec("stack deploy --prune --with-registry-auth -c ? ?", [$stackName, $yamlFile]);
+        $yamlFile->unlink();
+    }
+
+    /**
+     * @param $stackName
      * @return mixed
      * @throws \Exception
      */

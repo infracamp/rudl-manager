@@ -15,10 +15,20 @@ class Log {
     public $logs = [];
 
 
-    public function log($msg) :self
+    public function log($msg, array $backtrace) :self
     {
-        $this->logs[] = $msg;
+        $file = basename($backtrace["file"]);
+        $this->logs[] = "[$file:{$backtrace["line"]}] " . $msg;
         return $this;
+    }
+
+    private static $instance = null;
+
+    public static function Get() : self
+    {
+        if (self::$instance === null)
+            self::$instance = new self();
+        return self::$instance;
     }
 
 

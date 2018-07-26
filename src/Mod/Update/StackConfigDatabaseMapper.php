@@ -36,7 +36,7 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
     }
 
 
-    public function update(array $config)
+    public function doUpdate(array $config)
     {
         $oldIds = [];
         $this->db->query("SELECT * FROM Stack WHERE source='STATIC'")->each(function(array $row) use (&$oldIds) {
@@ -52,10 +52,10 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
 
         $updater = new IdDiffTool();
         $updater
-            ->onNew([$this, "newElement"])
-            ->onDelete([$this, "deletedElement"])
-            ->onModified([$this, "modifiedElement"])
-            ->onUnmodified([$this, "unmodifiedElement"]);
+            ->onNew([$this,     "newElement"])
+            ->onDelete([$this,  "deletedElement"])
+            ->onModified([$this,    "modifiedElement"])
+            ->onUnmodified([$this,  "unmodifiedElement"]);
         $updater->process($newIds, $oldIds);
 
     }
@@ -73,6 +73,8 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
         $stack = Stack::Cast($data);
         $stack->stackName = $key;
         $stack->source = "STATIC";
+        $stack->stackConfig = $data["config"];
+
         $this->db->insert($stack);
     }
 
@@ -94,7 +96,8 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
     ) {
         $stack = Stack::Load(["stackName"=>$key]);
         $stack->stackName = $key;
-
+        $stack->stackConfig = $newData["config"];
+        $this->db->update($stack);
     }
 
     private function unmodifiedElement($key, $data)
@@ -108,9 +111,18 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
     }
 
 
-    public static function Run(KSApp $app)
+    public static function Update(KSApp $app)
     {
         $p = new self($app->db, $app->confFile);
-        $p->update($app->confFile->get_yaml());
+        $p->doUpdate($app->confFile->get_yaml());
     }
+
+    public static function Startup(KSApp $app)
+    {
+        $app->db->query("SELECT stackName FROM Stack WHERE source='STATIC'")->each(function(array $row) use ($app){
+            $stack = Stack::Load($row["stackName"]);
+            $app->dockerCmd->stackDeploy($stack->name. $stack->stackConfig);
+        });
+    }
+
 }

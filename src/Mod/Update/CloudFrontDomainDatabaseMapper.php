@@ -12,8 +12,9 @@ namespace RudlManager\Mod\Update;
 
 use Phore\Dba\PhoreDba;
 use RudlManager\Db\CloudFrontDomain;
+use RudlManager\Mod\KSApp;
 
-class CloudFrontDomainDatabaseMapper implements ConfigDatabaseMapper
+class CloudFrontDomainDatabaseMapper
 {
 
     /**
@@ -98,5 +99,4 @@ class CloudFrontDomainDatabaseMapper implements ConfigDatabaseMapper
         }
         return $this;
     }
-
 }

@@ -32,8 +32,11 @@ class UpdateModule implements AppModule {
             return ["success"=>"true"];
         });
 
-        $app->onEvent("conf-update", [CloudFrontServiceDatabaseMapper::class, "Run"]);
-        $app->onEvent("conf-update", [StackConfigDatabaseMapper::class, "Run"]);
+        $app->onEvent("conf-startup", [CloudFrontServiceDatabaseMapper::class, "Startup"]);
+        $app->onEvent("conf-startup", [StackConfigDatabaseMapper::class, "Startup"]);
+
+        $app->onEvent("conf-update", [CloudFrontServiceDatabaseMapper::class, "Update"]);
+        $app->onEvent("conf-update", [StackConfigDatabaseMapper::class, "Update"]);
     }
 
 }
