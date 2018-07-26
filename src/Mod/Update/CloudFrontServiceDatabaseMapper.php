@@ -101,6 +101,7 @@ class CloudFrontServiceDatabaseMapper implements ConfigDatabaseMapper
     {
         $s = new self($app->db);
         $s->doUpdate($app->confFile->get_yaml());
+
     }
 
     public static function Startup(KSApp $app)

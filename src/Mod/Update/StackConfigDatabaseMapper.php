@@ -44,7 +44,7 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
         });
 
         $newIds = [];
-        foreach ($config["stack"] as $key => $data) {
+        foreach ($config["stacks"] as $key => $data) {
             $data["stackConfig"] = $this->configFile->withSubPath($data["config"])->assertFile()->get_contents();
             $data["stackName"] = $key;
             $newIds[$key] = $data;
@@ -56,6 +56,7 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
             ->onDelete([$this,  "deletedElement"])
             ->onModified([$this,    "modifiedElement"])
             ->onUnmodified([$this,  "unmodifiedElement"]);
+
         $updater->process($newIds, $oldIds);
 
     }
@@ -70,7 +71,7 @@ class StackConfigDatabaseMapper implements ConfigDatabaseMapper
      */
     private function newElement($key, $data)
     {
-        $stack = Stack::Cast($data);
+        $stack = Stack::Load($data);
         $stack->stackName = $key;
         $stack->source = "STATIC";
         $stack->stackConfig = $data["config"];
